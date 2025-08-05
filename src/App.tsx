@@ -1,15 +1,12 @@
-import { Button } from "./components/ui/button"
-
+import { Outlet } from "react-router";
+import CommonLayout from "./components/layouts/CommonLayout";
 
 function App() {
-
-
   return (
-    <>
-      <h1>Simple react app with shadcn</h1>
-      <Button>Click me</Button>
-    </>
-  )
+    <CommonLayout>
+      <Outlet />
+    </CommonLayout>
+  );
 }
 
-export default App
+export default App;
