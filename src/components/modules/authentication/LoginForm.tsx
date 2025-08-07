@@ -1,15 +1,38 @@
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Link } from "react-router"
+import { Link, useNavigate } from "react-router"
+import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form"
+import { useLoginMutation } from "@/redux/features/auth/auth.api"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import Password from "@/components/ui/Password"
+import { toast } from "sonner"
 
 export function LoginForm({
   className,
   ...props
-}: React.ComponentProps<"form">) {
+}: React.HTMLAttributes<HTMLDivElement>) {
+
+  const form = useForm();
+  const navigate = useNavigate()
+  const [login] = useLoginMutation();
+  const onSubmit: SubmitHandler<FieldValues> = async(data) =>{
+    console.log(data);;
+    try {
+      const res = await login(data).unwrap();
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+      if(error.status === 401) toast.error ("You are not verified");
+      navigate("/verify", {state: data.email})
+    }
+  }
+
+
+
+
   return (
-    <form className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Login to your account</h1>
         <p className="text-muted-foreground text-sm text-balance">
@@ -17,25 +40,53 @@ export function LoginForm({
         </p>
       </div>
       <div className="grid gap-6">
-        <div className="grid gap-3">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="m@example.com" required />
-        </div>
-        <div className="grid gap-3">
-          <div className="flex items-center">
-            <Label htmlFor="password">Password</Label>
-            <a
-              href="#"
-              className="ml-auto text-sm underline-offset-4 hover:underline"
-            >
-              Forgot your password?
-            </a>
-          </div>
-          <Input id="password" type="password" required />
-        </div>
-        <Button type="submit" className="w-full">
-          Login
-        </Button>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="jhon.doe@company.com"
+                      {...field}
+                      type="email"
+                    />
+                  </FormControl>
+                  <FormDescription className="sr-only">
+                    This is your public display name.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    {/* <Input placeholder="********" {...field} type="password"/> */}
+                    <Password {...field} />
+                  </FormControl>
+                  <FormDescription className="sr-only">
+                    This is your public display name.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit" className="w-full">
+              Submit
+            </Button>
+          </form>
+        </Form>
+
         <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
           <span className="bg-background text-muted-foreground relative z-10 px-2">
             Or continue with
@@ -48,7 +99,7 @@ export function LoginForm({
               fill="currentColor"
             />
           </svg>
-          Login with GitHub
+          Login with Google
         </Button>
       </div>
       <div className="text-center text-sm">
@@ -57,6 +108,6 @@ export function LoginForm({
           Register
         </Link>
       </div>
-    </form>
+    </div>
   )
 }
