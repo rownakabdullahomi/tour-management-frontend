@@ -1,35 +1,44 @@
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Link, useNavigate } from "react-router"
-import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form"
-import { useLoginMutation } from "@/redux/features/auth/auth.api"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import Password from "@/components/ui/Password"
-import { toast } from "sonner"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Link, useNavigate } from "react-router";
+import { useForm, type FieldValues, type SubmitHandler } from "react-hook-form";
+import { useLoginMutation } from "@/redux/features/auth/auth.api";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import Password from "@/components/ui/Password";
+import { toast } from "sonner";
 
 export function LoginForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-
   const form = useForm();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [login] = useLoginMutation();
-  const onSubmit: SubmitHandler<FieldValues> = async(data) =>{
-    console.log(data);;
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    console.log(data);
     try {
       const res = await login(data).unwrap();
       console.log(res);
     } catch (error) {
       console.log(error);
-      if(error.status === 401) toast.error ("You are not verified");
-      navigate("/verify", {state: data.email})
+      if (error.data.message === "Password does not match")
+        toast.error("Invalid credentials");
+
+      if (error.data.message === "User is not verified")
+        toast.error("Your account is not verified");
+      // if (error.status === 401) toast.error("You are not verified");
+      navigate("/verify", { state: data.email });
     }
-  }
-
-
-
+  };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -42,7 +51,6 @@ export function LoginForm({
       <div className="grid gap-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-
             <FormField
               control={form.control}
               name="email"
@@ -109,5 +117,5 @@ export function LoginForm({
         </Link>
       </div>
     </div>
-  )
+  );
 }
