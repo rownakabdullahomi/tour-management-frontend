@@ -24,6 +24,7 @@ const authApi = baseApi.injectEndpoints({
         data: userInfo,
       }),
     }),
+
     verifyOtp: builder.mutation<IResponse<null>, IVerifyOtp>({
       query: (userInfo) => ({
         url: "/otp/verify",
@@ -31,6 +32,21 @@ const authApi = baseApi.injectEndpoints({
         data: userInfo,
       }),
     }),
+
+    logout: builder.mutation({
+      query: () => ({
+        url: "/auth/logout",
+        method: "POST",
+      }),
+    }),
+
+    userInfo: builder.query({
+      query: () => ({
+        url: "/user/me",
+        method: "GET",
+      }),
+    }),
+   
   }),
 });
 
@@ -39,4 +55,6 @@ export const {
   useLoginMutation,
   useSendOtpMutation,
   useVerifyOtpMutation,
+  useUserInfoQuery,
+  useLogoutMutation
 } = authApi;
