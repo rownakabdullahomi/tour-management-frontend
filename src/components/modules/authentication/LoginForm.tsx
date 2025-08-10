@@ -25,10 +25,12 @@ export function LoginForm({
   const navigate = useNavigate();
   const [login] = useLoginMutation();
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    console.log(data);
     try {
       const res = await login(data).unwrap();
-      console.log(res);
+      if(res.success){
+        toast.success("Logged in successfully.");
+        navigate("/");
+      }
     } catch (error) {
       console.log(error);
       if (error.data.message === "Password does not match")
