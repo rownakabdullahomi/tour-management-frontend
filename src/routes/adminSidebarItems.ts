@@ -1,6 +1,10 @@
 import AddTour from "@/pages/admin/AddTour";
-import Analytics from "@/pages/admin/Analytics";
+import AddTourType from "@/pages/admin/AddTourType";
+// import Analytics from "@/pages/admin/Analytics";
 import type { ISidebarItem } from "@/types";
+import { lazy } from "react";
+
+const Analytics = lazy(() => import("@/pages/admin/Analytics"))
 
 export const adminSidebarItems: ISidebarItem[] = [
     {
@@ -19,12 +23,7 @@ export const adminSidebarItems: ISidebarItem[] = [
         {
           title: "Add Tour Type",
           url: "/admin/add-tour-type",
-          component: AddTour,
-        },
-        {
-          title: "Add Tour",
-          url: "/admin/add-tour",
-          component: AddTour,
+          component: AddTourType,
         },
         {
           title: "Add Tour",
